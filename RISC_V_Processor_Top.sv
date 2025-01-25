@@ -82,6 +82,13 @@ module RISC_V_Processor_Top(
     wire [31:0] rs1_data_or_pc_or_zero;
     wire [1:0] rs1_data_or_pc_or_zero_control;
     
+    
+    //Instruction Fetch - Instruction Decode Pipeline Register
+    wire [31:0] fetched_instruction;
+    wire branch_or_not_final_command;
+    wire [31:0] branch_address;
+    
+    
     PC PC(
         .inst_addr_in(pc_next),
         .inst_addr_out(pc_current),
@@ -91,7 +98,7 @@ module RISC_V_Processor_Top(
     
     Instruction_Memory Instruction_Memory(
         .adddress(pc_current),
-        .instruction(instruction),
+        .instruction(fetched_instruction),
         .clk(clk),
         .resetn(resetn)
     );
@@ -196,11 +203,29 @@ module RISC_V_Processor_Top(
     );
     
     Two_One_Mux PC_plus_four_or_Branch(
-        .sel(branch_or_not),
+        .sel(branch_or_not_final_command),
         .a(pc_plus_four),
-        .b(alu_result),
+        .b(branch_address),
         .out(pc_next)
     );
+    
+    IF_ID IF_ID_Register(
+        .instruction_in(fetched_instruction),
+        .branch_or_not(branch_or_not),
+        .calculated_branch_address(alu_result),
+        .instruction_out(instruction),
+        .branch_or_not_out(branch_or_not_final_command),
+        .calculated_branch_address_out(branch_address),
+        .clk(clk),
+        .resetn(resetn)
+    );
+    
+    
+    
+    
+    
+    
+    
     
 	hex_decoder u_hex0 (
 		.bin(output_value[3:0]),   
