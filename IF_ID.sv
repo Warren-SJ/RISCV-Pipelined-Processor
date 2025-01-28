@@ -23,10 +23,10 @@
 module IF_ID(
     input [31:0] instruction_in,
     input branch_or_not,
-    input calculated_branch_address,
+    input [31:0] calculated_branch_address,
     output reg [31:0] instruction_out,
     output reg branch_or_not_out,
-    output reg calculated_branch_address_out,
+    output reg [31:0] calculated_branch_address_out,
     input clk,
     input resetn
     );

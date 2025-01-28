@@ -88,6 +88,22 @@ module RISC_V_Processor_Top(
     wire branch_or_not_final_command;
     wire [31:0] branch_address;
     
+    //Instruction Decode - Instruction Execute Pipeline Register
+    wire [31:0] alu_input1;
+    wire [31:0] alu_input2;
+    wire [31:0] data_to_store;
+    wire [31:0] alu_operation_out;
+    wire reg_write_out;
+    wire [4:0] rd_address_out;
+    wire data_mem_write_out;
+    wire [1:0] alu_or_load_or_pc_plus_four_control_out;
+    
+    //Instruction Execute - Memory Write Pipeline Register
+    wire [31:0] alu_result_out;
+    wire [31:0] data_to_store_out;
+    wire data_mem_write_out_ex;
+    wire [1:0] alu_or_load_or_pc_plus_four_control_ex;
+    wire reg_write_out_ex;
     
     PC PC(
         .inst_addr_in(pc_next),
@@ -113,21 +129,21 @@ module RISC_V_Processor_Top(
     Register_File Register_File(
         .rs1(rs1_address),
         .rs2(rs2_address),
-        .rd(rd_address),
+        .rd(rd_address_out),
         .rs1_data(rs1_data),
         .rs2_data(rs2_data),
         .write_data(rd_data),
-        .write_enable(reg_write),
+        .write_enable(reg_write_out_ex),
         .clk(clk),
         .resetn(resetn)
     );
     
     ALU_32bit ALU_32bit(
-        .a(rs1_data_or_pc_or_zero),
-        .b(rs2_data_or_immediate),
+        .a(alu_input1),
+        .b(alu_input2),
         .result(alu_result),
         .resetn(resetn),
-        .control(alu_operation)
+        .control(alu_operation_out)
     );
     
     Control_Unit Control_Unit(
@@ -162,13 +178,13 @@ module RISC_V_Processor_Top(
     
     Data_Memory Data_Memory(
         .write_address(alu_result),
-        .write_en(data_mem_write),
-        .write_data(rs2_data),
+        .write_en(data_mem_write_out_ex),
+        .write_data(data_to_store),
         .write_command(instruction[13:12]),
         .read_data(data_mem_read_data),
         .clk(clk),
         .resetn(resetn),
-        .read_address(alu_result)
+        .read_address(alu_result_out)
     );
     
     Load_Generator Load_Generator(
@@ -179,8 +195,8 @@ module RISC_V_Processor_Top(
     );
     
     Three_One_Mux Alu_or_Load_or_Pc_plus_four(
-        .sel(alu_or_load_or_pc_plus_four_control),
-        .a(alu_result),
+        .sel(alu_or_load_or_pc_plus_four_control_ex),
+        .a(alu_result_out),
         .b(data_mem_read_data_corrected),
         .c(pc_plus_four),
         .out(rd_data)
@@ -220,7 +236,41 @@ module RISC_V_Processor_Top(
         .resetn(resetn)
     );
     
+    ID_EX ID_EX_Register(
+        .alu_input1_in(rs1_data_or_pc_or_zero),
+        .alu_input1_out(alu_input1),
+        .alu_input2_in(rs2_data_or_immediate),
+        .alu_input2_out(alu_input2),
+        .data_memory_store_in(rs2_data),
+        .data_memory_store_out(data_to_store),
+        .alu_control_in(alu_operation),
+        .alu_control_out(alu_operation_out),
+        .reg_write_in(reg_write),
+        .reg_write_out(reg_write_out),
+        .rd_address_in(rd_address),
+        .rd_address_out(rd_address_out),
+        .data_mem_write_in(data_mem_write),
+        .data_mem_write_out(data_mem_write_out),
+        .alu_or_load_or_pc_plus_four_in(alu_or_load_or_pc_plus_four_control),
+        .alu_or_load_or_pc_plus_four_out(alu_or_load_or_pc_plus_four_control_out),
+        .clk(clk),
+        .resetn(resetn)
+    );
     
+    EX_MW EX_MW_REGISTER(
+        .alu_result_in(alu_result),
+        .alu_result_out(alu_result_out),
+        .write_data_in(data_to_store),
+        .write_data_out(data_to_store_out),
+        .data_write_en_in(data_mem_write_out),
+        .data_write_en_out(data_mem_write_out_ex),
+        .reg_write_in(reg_write_out),
+        .reg_write_out(reg_write_out_ex),
+        .alu_or_load_or_pc_plus_four_in(alu_or_load_or_pc_plus_four_control_out),
+        .alu_or_load_or_pc_plus_four_out(alu_or_load_or_pc_plus_four_control_ex),
+        .clk(clk),
+        .resetn(resetn)
+    );
     
     
     
