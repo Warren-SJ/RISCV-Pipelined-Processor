@@ -92,7 +92,7 @@ module RISC_V_Processor_Top(
     wire [31:0] alu_input1;
     wire [31:0] alu_input2;
     wire [31:0] data_to_store;
-    wire [31:0] alu_operation_out;
+    wire [2:0] alu_operation_out;
     wire reg_write_out;
     wire [4:0] rd_address_out;
     wire data_mem_write_out;
@@ -104,6 +104,10 @@ module RISC_V_Processor_Top(
     wire data_mem_write_out_ex;
     wire [1:0] alu_or_load_or_pc_plus_four_control_ex;
     wire reg_write_out_ex;
+    
+    //Memory Write - Register Writeback Pipeline Register
+    wire [31:0] data_mem_read_data_corrected_out;
+    wire [1:0] alu_or_load_or_pc_plus_four_control_mw;
     
     PC PC(
         .inst_addr_in(pc_next),
@@ -197,7 +201,7 @@ module RISC_V_Processor_Top(
     Three_One_Mux Alu_or_Load_or_Pc_plus_four(
         .sel(alu_or_load_or_pc_plus_four_control_ex),
         .a(alu_result_out),
-        .b(data_mem_read_data_corrected),
+        .b(data_mem_read_data_corrected_out),
         .c(pc_plus_four),
         .out(rd_data)
     );
@@ -257,7 +261,7 @@ module RISC_V_Processor_Top(
         .resetn(resetn)
     );
     
-    EX_MW EX_MW_REGISTER(
+    EX_MW EX_MW_Register(
         .alu_result_in(alu_result),
         .alu_result_out(alu_result_out),
         .write_data_in(data_to_store),
@@ -272,9 +276,14 @@ module RISC_V_Processor_Top(
         .resetn(resetn)
     );
     
-    
-    
-    
+    MW_WB MW_WB_Register(
+        .read_data_in(data_mem_read_data_corrected),
+        .read_data_out(data_mem_read_data_corrected_out),
+        .alu_or_load_or_pc_plus_four_in(alu_or_load_or_pc_plus_four_control_ex),
+        .alu_or_load_or_pc_plus_four_out(alu_or_load_or_pc_plus_four_control_mw),
+        .clk(clk),
+        .resetn(resetn)
+    );
     
     
 	hex_decoder u_hex0 (
@@ -293,7 +302,7 @@ module RISC_V_Processor_Top(
 	);
 	
 	hex_decoder u_hex3 (
-		.bin(alu_result[15:12]), 
+		.bin(output_value[15:12]), 
 		.seg(hex3)
 	);
 	
