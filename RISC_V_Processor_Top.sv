@@ -111,6 +111,8 @@ module RISC_V_Processor_Top(
     //Memory Write - Register Writeback Pipeline Register
     wire [31:0] data_mem_read_data_corrected_out;
     wire [1:0] alu_or_load_or_pc_plus_four_control_mw;
+    wire reg_write_out_mw;
+    wire [4:0] rd_address_out_wb;
     
     PC PC(
         .inst_addr_in(pc_next),
@@ -136,11 +138,11 @@ module RISC_V_Processor_Top(
     Register_File Register_File(
         .rs1(rs1_address),
         .rs2(rs2_address),
-        .rd(rd_address_out),
+        .rd(rd_address_out_wb),
         .rs1_data(rs1_data),
         .rs2_data(rs2_data),
         .write_data(rd_data),
-        .write_enable(reg_write_out_ex),
+        .write_enable(reg_write_out_mw),
         .clk(clk),
         .resetn(resetn)
     );
@@ -289,6 +291,10 @@ module RISC_V_Processor_Top(
         .read_data_out(data_mem_read_data_corrected_out),
         .alu_or_load_or_pc_plus_four_in(alu_or_load_or_pc_plus_four_control_ex),
         .alu_or_load_or_pc_plus_four_out(alu_or_load_or_pc_plus_four_control_mw),
+        .reg_write_in(reg_write_out_ex),
+        .reg_write_out(reg_write_out_mw),
+        .rd_address_in(rd_address_out_mw),
+        .rd_address_out(rd_address_out_wb),
         .clk(clk),
         .resetn(resetn)
     );
