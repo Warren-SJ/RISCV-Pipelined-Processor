@@ -85,8 +85,8 @@ module RISC_V_Processor_Top(
     
     //Instruction Fetch - Instruction Decode Pipeline Register
     wire [31:0] fetched_instruction;
-    wire branch_or_not_final_command;
     wire [31:0] branch_address;
+    wire [31:0] pc_plus_four_out;
     
     //Instruction Decode - Instruction Execute Pipeline Register
     wire [31:0] alu_input1;
@@ -97,6 +97,7 @@ module RISC_V_Processor_Top(
     wire [4:0] rd_address_out;
     wire data_mem_write_out;
     wire [1:0] alu_or_load_or_pc_plus_four_control_out;
+    wire [31:0] pc_plus_four_out_ex;
     
     //Instruction Execute - Memory Write Pipeline Register
     wire [31:0] alu_result_out;
@@ -104,6 +105,8 @@ module RISC_V_Processor_Top(
     wire data_mem_write_out_ex;
     wire [1:0] alu_or_load_or_pc_plus_four_control_ex;
     wire reg_write_out_ex;
+    wire [31:0] pc_plus_four_out_mw;
+    wire [4:0] rd_address_out_mw;
     
     //Memory Write - Register Writeback Pipeline Register
     wire [31:0] data_mem_read_data_corrected_out;
@@ -202,7 +205,7 @@ module RISC_V_Processor_Top(
         .sel(alu_or_load_or_pc_plus_four_control_ex),
         .a(alu_result_out),
         .b(data_mem_read_data_corrected_out),
-        .c(pc_plus_four),
+        .c(pc_plus_four_out_ex),
         .out(rd_data)
     );
     
@@ -223,7 +226,7 @@ module RISC_V_Processor_Top(
     );
     
     Two_One_Mux PC_plus_four_or_Branch(
-        .sel(branch_or_not_final_command),
+        .sel(branch_or_not),
         .a(pc_plus_four),
         .b(branch_address),
         .out(pc_next)
@@ -232,10 +235,9 @@ module RISC_V_Processor_Top(
     IF_ID IF_ID_Register(
         .instruction_in(fetched_instruction),
         .branch_or_not(branch_or_not),
-        .calculated_branch_address(alu_result),
         .instruction_out(instruction),
-        .branch_or_not_out(branch_or_not_final_command),
-        .calculated_branch_address_out(branch_address),
+        .pc(pc_plus_four),
+        .pc_out(pc_plus_four_out),
         .clk(clk),
         .resetn(resetn)
     );
@@ -257,6 +259,8 @@ module RISC_V_Processor_Top(
         .data_mem_write_out(data_mem_write_out),
         .alu_or_load_or_pc_plus_four_in(alu_or_load_or_pc_plus_four_control),
         .alu_or_load_or_pc_plus_four_out(alu_or_load_or_pc_plus_four_control_out),
+        .pc_plus_four(pc_plus_four_out),
+        .pc_plus_four_out(pc_plus_four_out_ex),
         .clk(clk),
         .resetn(resetn)
     );
@@ -272,6 +276,10 @@ module RISC_V_Processor_Top(
         .reg_write_out(reg_write_out_ex),
         .alu_or_load_or_pc_plus_four_in(alu_or_load_or_pc_plus_four_control_out),
         .alu_or_load_or_pc_plus_four_out(alu_or_load_or_pc_plus_four_control_ex),
+        .pc_plus_four_in(pc_plus_four_out_ex),
+        .pc_plus_four_out(pc_plus_four_out_mw),
+        .rd_address_in(rd_address_out),
+        .rd_address_out(rd_address_out_mw),
         .clk(clk),
         .resetn(resetn)
     );
