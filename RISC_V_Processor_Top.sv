@@ -101,6 +101,8 @@ module RISC_V_Processor_Top(
     wire [1:0] alu_or_load_or_pc_plus_four_control_out;
     wire [31:0] pc_plus_four_out_ex;
     wire [31:0] pc_current_out_ex;
+    wire [1:0] data_men_write_command_out;
+    wire [2:0] load_gen_command_out;
     
     //Instruction Execute - Memory Write Pipeline Register
     wire [31:0] alu_result_out;
@@ -110,6 +112,8 @@ module RISC_V_Processor_Top(
     wire reg_write_out_ex;
     wire [31:0] pc_plus_four_out_mw;
     wire [4:0] rd_address_out_mw;
+    wire [1:0] data_men_write_command_out_mw;
+    wire [2:0] load_gen_command_out_mw;
     
     //Memory Write - Register Writeback Pipeline Register
     wire [31:0] data_mem_read_data_corrected_out;
@@ -193,7 +197,7 @@ module RISC_V_Processor_Top(
         .write_address(alu_result),
         .write_en(data_mem_write_out_ex),
         .write_data(data_to_store),
-        .write_command(instruction[13:12]),
+        .write_command(data_men_write_command_out_mw),
         .read_data(data_mem_read_data),
         .clk(clk),
         .resetn(resetn),
@@ -202,13 +206,13 @@ module RISC_V_Processor_Top(
     
     Load_Generator Load_Generator(
         .data_input(data_mem_read_data),
-        .control(instruction[14:12]),
+        .control(load_gen_command_out_mw),
         .data_output(data_mem_read_data_corrected),
         .resetn(resetn)
     );
     
     Three_One_Mux Alu_or_Load_or_Pc_plus_four(
-        .sel(alu_or_load_or_pc_plus_four_control_ex),
+        .sel(alu_or_load_or_pc_plus_four_control_mw),
         .a(alu_result_out_wb),
         .b(data_mem_read_data_corrected_out),
         .c(pc_plus_four_out_ex),
@@ -280,6 +284,10 @@ module RISC_V_Processor_Top(
         .pc_plus_four_out(pc_plus_four_out_ex),
         .pc_current(pc_current_out),
         .pc_current_out(pc_current_out_ex),
+        .data_men_write_command_in(instruction[13:12]),
+        .data_men_write_command_out(data_men_write_command_out),
+        .load_gen_command_in(instruction[14:12]),
+        .load_gen_command_out(load_gen_command_out),
         .clk(clk),
         .resetn(resetn)
     );
@@ -299,6 +307,10 @@ module RISC_V_Processor_Top(
         .pc_plus_four_out(pc_plus_four_out_mw),
         .rd_address_in(rd_address_out),
         .rd_address_out(rd_address_out_mw),
+        .data_men_write_command_in(data_men_write_command_out),
+        .data_men_write_command_out(data_men_write_command_out_mw),
+        .load_gen_command_in(load_gen_command_out),
+        .load_gen_command_out(load_gen_command_out_mw),
         .clk(clk),
         .resetn(resetn)
     );

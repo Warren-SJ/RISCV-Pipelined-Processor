@@ -41,6 +41,10 @@ module ID_EX(
     output reg [31:0] pc_plus_four_out,
     input [31:0] pc_current,
     output reg [31:0] pc_current_out,
+    input [1:0] data_men_write_command_in,
+    output reg [1:0] data_men_write_command_out,
+    input [2:0] load_gen_command_in,
+    output reg [2:0] load_gen_command_out,
     input clk,
     input resetn
     );
@@ -56,6 +60,8 @@ module ID_EX(
             alu_or_load_or_pc_plus_four_out <= 2'b00;
             pc_plus_four_out <= 32'h00000000;
             pc_current_out <= 32'h00000000;
+            data_men_write_command_out <= 2'b00;
+            load_gen_command_out <= 3'b000;
         end else begin
             alu_input1_out <= alu_input1_in;
             alu_input2_out <= alu_input2_in;
@@ -67,6 +73,8 @@ module ID_EX(
             alu_or_load_or_pc_plus_four_out <= alu_or_load_or_pc_plus_four_in;
             pc_plus_four_out <= pc_plus_four;
             pc_current_out <= pc_current;
+            data_men_write_command_out <= data_men_write_command_in;
+            load_gen_command_out <= load_gen_command_in;
         end
     end
 endmodule
