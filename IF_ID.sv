@@ -30,6 +30,7 @@ module IF_ID(
     output reg [31:0] pc_next_out,
     output reg [31:0] pc_current_out,
     output reg [31:0] branch_address_out,
+    output reg branch_or_not_out,
     input clk,
     input resetn
     );
@@ -39,17 +40,18 @@ module IF_ID(
             pc_next_out <= 32'h00000000;
             pc_current_out <= 32'h00000000;
             branch_address_out <= 32'h00000000;
-        end else if (branch_or_not)begin 
-            instruction_out <= 32'h00000000;
-            pc_next_out <= 32'h00000000;
-            pc_current_out <= 32'h00000000;
-            branch_address_out <= 32'h00000000;
-        end
-        begin
-            instruction_out <= instruction_in;
-            pc_next_out <= pc_next;
-            pc_current_out <= pc_current;
-            branch_address_out <= branch_address_in;
-        end
+            branch_or_not_out <= 1'b0;
+        end else begin
+            if (branch_or_not) begin 
+                instruction_out <= 32'h00000000;
+                branch_address_out <= branch_address_in;
+                branch_or_not_out <= 1'b1;
+            end else begin
+                instruction_out <= instruction_in;
+                pc_next_out <= pc_next;
+                pc_current_out <= pc_current;
+                branch_or_not_out <= 1'b0;
+            end
+       end
     end
 endmodule

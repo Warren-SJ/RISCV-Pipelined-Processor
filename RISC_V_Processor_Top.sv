@@ -89,6 +89,7 @@ module RISC_V_Processor_Top(
     wire [31:0] pc_plus_four_out;
     wire [31:0] branch_address_out;
     wire [31:0] pc_current_out;
+    wire branch_or_not_out;
     
     //Instruction Decode - Instruction Execute Pipeline Register
     wire [31:0] alu_input1;
@@ -236,14 +237,14 @@ module RISC_V_Processor_Top(
     );
     
     Adder_32bit Branch_Adder(
-        .a(pc_current_out),
+        .a(pc_current_out_ex),
         .b(immediate),
         .result(branch_address),
         .resetn(resetn)
     );
     
     Two_One_Mux PC_plus_four_or_Branch(
-        .sel(branch_or_not),
+        .sel(branch_or_not_out),
         .a(pc_plus_four),
         .b(branch_address_out),
         .out(pc_next)
@@ -252,6 +253,7 @@ module RISC_V_Processor_Top(
     IF_ID IF_ID_Register(
         .instruction_in(fetched_instruction),
         .branch_or_not(branch_or_not),
+        .branch_or_not_out(branch_or_not_out),
         .instruction_out(instruction),
         .pc_next(pc_plus_four),
         .pc_next_out(pc_plus_four_out),

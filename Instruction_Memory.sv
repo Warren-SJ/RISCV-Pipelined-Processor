@@ -103,11 +103,11 @@ module Instruction_Memory(
 //          memory[30] <= 8'b00001100;
 //          memory[31] <= 8'b11100111;
                      
-//          // blt x3 x5 20
-//          memory[28] <= 8'b00000000;
-//          memory[29] <= 8'b01010001;
-//          memory[30] <= 8'b11001110;
-//          memory[31] <= 8'b01100011;
+          // blt x1, x3, 40
+          memory[52] <= 8'b00000010;
+          memory[53] <= 8'b00110000;
+          memory[54] <= 8'b11000100;
+          memory[55] <= 8'b01100011;
     
   end
 
