@@ -194,9 +194,9 @@ module RISC_V_Processor_Top(
     );
     
     Data_Memory Data_Memory(
-        .write_address(alu_result),
+        .write_address(alu_result_out),
         .write_en(data_mem_write_out_ex),
-        .write_data(data_to_store),
+        .write_data(data_to_store_out),
         .write_command(data_men_write_command_out_mw),
         .read_data(data_mem_read_data),
         .clk(clk),

@@ -73,11 +73,11 @@ module Instruction_Memory(
 //		  memory[22] <= 8'b10010010;
 //		  memory[23] <= 8'b10010011;
 		  
-//		  // sw x5, 20(x1)
-//		  memory[24] <= 8'b00000000;
-//		  memory[25] <= 8'b01010000;
-//		  memory[26] <= 8'b10101010;
-//		  memory[27] <= 8'b00100011;
+		  // sw x3, 20(x1)
+		  memory[36] <= 8'b00000000;
+		  memory[37] <= 8'b00110000;
+		  memory[38] <= 8'b10101010;
+		  memory[39] <= 8'b00100011;
 		  
 //		  // lui x12 460
 //		  memory[28] <= 8'b00000000;

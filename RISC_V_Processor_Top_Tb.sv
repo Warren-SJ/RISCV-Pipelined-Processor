@@ -43,7 +43,7 @@ module RISC_V_Processor_Top_Tb;
         
         #10;
         resetn = 1;
-        #150;
+        #500;
 
         $finish;
     end
