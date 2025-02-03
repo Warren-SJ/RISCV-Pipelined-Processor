@@ -34,6 +34,7 @@ module Control_Unit(
     output reg branch_possibility,
     output reg [1:0] rs1_data_or_pc_or_zero,
     output reg [1:0] alu_or_load_or_pc_plus_four,
+    output reg definite_jump,
     input resetn
     );
 
@@ -69,6 +70,7 @@ module Control_Unit(
                      branch_possibility = 1'b0;
                      rs1_data_or_pc_or_zero = 2'b00;
                      alu_or_load_or_pc_plus_four = 2'b00;
+                     definite_jump = 1'b0;
                      case (func3)
                         3'b000: if (func7 == 7'b0000000)
                                     alu_op = 3'b000;
@@ -91,6 +93,7 @@ module Control_Unit(
                     branch_possibility = 1'b0;
                     rs1_data_or_pc_or_zero = 2'b00;
                     alu_or_load_or_pc_plus_four = 2'b00;
+                    definite_jump = 1'b0;
                     case(func3)
                         3'b000: alu_op = 3'b000;
                         3'b100: alu_op = 3'b010;
@@ -111,6 +114,7 @@ module Control_Unit(
                     branch_possibility = 1'b0;
                     rs1_data_or_pc_or_zero = 2'b00;
                     alu_or_load_or_pc_plus_four = 2'b01;
+                    definite_jump = 1'b0;
                   end
                   7'b0100011: begin
                     alu_op = 3'b000;
@@ -120,6 +124,7 @@ module Control_Unit(
                     branch_possibility = 1'b0;
                     rs1_data_or_pc_or_zero = 2'b00;
                     alu_or_load_or_pc_plus_four = 2'b00;
+                    definite_jump = 1'b0;
                   end
                   7'b1100011: begin
                     alu_op = 3'b000;
@@ -129,6 +134,7 @@ module Control_Unit(
                     branch_possibility = 1'b1;
                     rs1_data_or_pc_or_zero = 2'b01;
                     alu_or_load_or_pc_plus_four = 2'b00;
+                    definite_jump = 1'b0;
                   end
                   7'b1101111: begin
                     alu_op = 3'b000;
@@ -138,6 +144,7 @@ module Control_Unit(
                     branch_possibility = 1'b1;
                     rs1_data_or_pc_or_zero = 2'b01;
                     alu_or_load_or_pc_plus_four = 2'b10;
+                    definite_jump = 1'b1;
                   end
                   7'b1100111: begin
                     alu_op = 3'b000;
@@ -147,6 +154,7 @@ module Control_Unit(
                     branch_possibility = 1'b1;
                     rs1_data_or_pc_or_zero = 2'b01;
                     alu_or_load_or_pc_plus_four = 2'b10;
+                    definite_jump = 1'b1;
                   end
                   7'b0110111: begin
                     alu_op = 3'b000;
@@ -156,6 +164,7 @@ module Control_Unit(
                     branch_possibility = 1'b0;
                     rs1_data_or_pc_or_zero = 2'b10;
                     alu_or_load_or_pc_plus_four = 2'b00;
+                    definite_jump = 1'b0;
                   end
                   7'b0010111: begin
                     alu_op = 3'b000;
@@ -165,6 +174,7 @@ module Control_Unit(
                     branch_possibility = 1'b0;
                     rs1_data_or_pc_or_zero =2'b01;
                     alu_or_load_or_pc_plus_four = 2'b00;
+                    definite_jump = 1'b0;
                   end
                   default: begin
                                reg_write =1'b0;
@@ -174,6 +184,7 @@ module Control_Unit(
                                branch_possibility = 1'b0;
                                rs1_data_or_pc_or_zero = 2'b00;
                                alu_or_load_or_pc_plus_four = 2'b00;
+                               definite_jump = 1'b0;
                            end
              endcase
         end

@@ -42,14 +42,14 @@ module IF_ID(
             branch_address_out <= 32'h00000000;
             branch_or_not_out <= 1'b0;
         end else begin
+                pc_next_out <= pc_next;
+                pc_current_out <= pc_current;
             if (branch_or_not) begin 
                 instruction_out <= 32'h00000000;
                 branch_address_out <= branch_address_in;
                 branch_or_not_out <= 1'b1;
             end else begin
                 instruction_out <= instruction_in;
-                pc_next_out <= pc_next;
-                pc_current_out <= pc_current;
                 branch_or_not_out <= 1'b0;
             end
        end

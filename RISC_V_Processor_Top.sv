@@ -77,6 +77,7 @@ module RISC_V_Processor_Top(
     
     //Jump wires
     wire [1:0] alu_or_load_or_pc_plus_four_control;
+    wire definite_jump;
     
     //Upper immediate wires
     wire [31:0] rs1_data_or_pc_or_zero;
@@ -109,8 +110,8 @@ module RISC_V_Processor_Top(
     wire [31:0] alu_result_out;
     wire [31:0] data_to_store_out;
     wire data_mem_write_out_ex;
-    wire [1:0] alu_or_load_or_pc_plus_four_control_ex;
-    wire reg_write_out_ex;
+    wire [1:0] alu_or_load_or_pc_plus_four_control_mw;
+    wire reg_write_out_mw;
     wire [31:0] pc_plus_four_out_mw;
     wire [4:0] rd_address_out_mw;
     wire [1:0] data_men_write_command_out_mw;
@@ -118,10 +119,11 @@ module RISC_V_Processor_Top(
     
     //Memory Write - Register Writeback Pipeline Register
     wire [31:0] data_mem_read_data_corrected_out;
-    wire [1:0] alu_or_load_or_pc_plus_four_control_mw;
-    wire reg_write_out_mw;
+    wire [1:0] alu_or_load_or_pc_plus_four_control_wb;
+    wire reg_write_out_wb;
     wire [4:0] rd_address_out_wb;
     wire [31:0] alu_result_out_wb;
+    wire [31:0] pc_plus_four_out_wb;
     
     PC PC(
         .inst_addr_in(pc_next),
@@ -151,7 +153,7 @@ module RISC_V_Processor_Top(
         .rs1_data(rs1_data),
         .rs2_data(rs2_data),
         .write_data(rd_data),
-        .write_enable(reg_write_out_mw),
+        .write_enable(reg_write_out_wb),
         .clk(clk),
         .resetn(resetn)
     );
@@ -178,7 +180,8 @@ module RISC_V_Processor_Top(
         .reg_or_immediate(reg_or_immediate),
         .rs1_data_or_pc_or_zero(rs1_data_or_pc_or_zero_control),
         .alu_or_load_or_pc_plus_four(alu_or_load_or_pc_plus_four_control),
-        .branch_possibility(branch_possibility)
+        .branch_possibility(branch_possibility),
+        .definite_jump(definite_jump)
     );
     
     Two_One_Mux Reg_or_Immediate(
@@ -213,10 +216,10 @@ module RISC_V_Processor_Top(
     );
     
     Three_One_Mux Alu_or_Load_or_Pc_plus_four(
-        .sel(alu_or_load_or_pc_plus_four_control_mw),
+        .sel(alu_or_load_or_pc_plus_four_control_wb),
         .a(alu_result_out_wb),
         .b(data_mem_read_data_corrected_out),
-        .c(pc_plus_four_out_ex),
+        .c(pc_plus_four_out_wb),
         .out(rd_data)
     );
     
@@ -233,6 +236,7 @@ module RISC_V_Processor_Top(
         .rs2(rs2_data),
         .branch_or_not(branch_or_not),
         .command({instruction[2],instruction[14:12]}),
+        .definite_jump(definite_jump),
         .branch_possibility(branch_possibility)
     );
     
@@ -302,9 +306,9 @@ module RISC_V_Processor_Top(
         .data_write_en_in(data_mem_write_out),
         .data_write_en_out(data_mem_write_out_ex),
         .reg_write_in(reg_write_out),
-        .reg_write_out(reg_write_out_ex),
+        .reg_write_out(reg_write_out_mw),
         .alu_or_load_or_pc_plus_four_in(alu_or_load_or_pc_plus_four_control_out),
-        .alu_or_load_or_pc_plus_four_out(alu_or_load_or_pc_plus_four_control_ex),
+        .alu_or_load_or_pc_plus_four_out(alu_or_load_or_pc_plus_four_control_mw),
         .pc_plus_four_in(pc_plus_four_out_ex),
         .pc_plus_four_out(pc_plus_four_out_mw),
         .rd_address_in(rd_address_out),
@@ -320,14 +324,16 @@ module RISC_V_Processor_Top(
     MW_WB MW_WB_Register(
         .read_data_in(data_mem_read_data_corrected),
         .read_data_out(data_mem_read_data_corrected_out),
-        .alu_or_load_or_pc_plus_four_in(alu_or_load_or_pc_plus_four_control_ex),
-        .alu_or_load_or_pc_plus_four_out(alu_or_load_or_pc_plus_four_control_mw),
-        .reg_write_in(reg_write_out_ex),
-        .reg_write_out(reg_write_out_mw),
+        .alu_or_load_or_pc_plus_four_in(alu_or_load_or_pc_plus_four_control_mw),
+        .alu_or_load_or_pc_plus_four_out(alu_or_load_or_pc_plus_four_control_wb),
+        .reg_write_in(reg_write_out_mw),
+        .reg_write_out(reg_write_out_wb),
         .rd_address_in(rd_address_out_mw),
         .rd_address_out(rd_address_out_wb),
         .alu_result_in(alu_result_out),
         .alu_result_out(alu_result_out_wb),
+        .pc_plus_four_in(pc_plus_four_out_mw),
+        .pc_plus_four_out(pc_plus_four_out_wb),
         .clk(clk),
         .resetn(resetn)
     );

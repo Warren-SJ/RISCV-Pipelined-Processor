@@ -25,22 +25,25 @@ module Branch_Comparator(
     input [31:0] rs2,
     output reg branch_or_not,
     input [3:0] command,
-    input branch_possibility
+    input branch_possibility,
+    input definite_jump
     );
     always_comb begin
-        if (branch_possibility) begin
-            casex(command)
-                4'b0000: branch_or_not <= rs1 == rs2 ? 1'b1:1'b0;
-                4'b0001: branch_or_not <= rs1 != rs2 ? 1'b1:1'b0;
-                4'b0100: branch_or_not <= $signed(rs1) < $signed(rs2) ? 1'b1:1'b0;
-                4'b0101: branch_or_not <= $signed(rs1) >= $signed(rs2) ? 1'b1:1'b0;
-                4'b0110: branch_or_not <= rs1 < rs2 ? 1'b1:1'b0;
-                4'b0111: branch_or_not <= rs1 >= rs2 ? 1'b1:1'b0;
-                4'b1xxx: branch_or_not <= 1'b1;
-                default: branch_or_not <= 1'b0; 
-            endcase
-        end else begin
-            branch_or_not <= 1'b0;
+        if (definite_jump)
+            branch_or_not <= 1'b1;
+            else if (branch_possibility) begin
+                casex(command)
+                    4'b0000: branch_or_not <= rs1 == rs2 ? 1'b1:1'b0;
+                    4'b0001: branch_or_not <= rs1 != rs2 ? 1'b1:1'b0;
+                    4'b0100: branch_or_not <= $signed(rs1) < $signed(rs2) ? 1'b1:1'b0;
+                    4'b0101: branch_or_not <= $signed(rs1) >= $signed(rs2) ? 1'b1:1'b0;
+                    4'b0110: branch_or_not <= rs1 < rs2 ? 1'b1:1'b0;
+                    4'b0111: branch_or_not <= rs1 >= rs2 ? 1'b1:1'b0;
+                    4'b1xxx: branch_or_not <= 1'b1;
+                    default: branch_or_not <= 1'b0; 
+                endcase
+            end else begin
+                branch_or_not <= 1'b0;
+            end
         end
-    end
 endmodule
