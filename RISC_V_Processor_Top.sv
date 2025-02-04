@@ -286,7 +286,7 @@ module RISC_V_Processor_Top(
         .data_mem_write_out(data_mem_write_out),
         .alu_or_load_or_pc_plus_four_in(alu_or_load_or_pc_plus_four_control),
         .alu_or_load_or_pc_plus_four_out(alu_or_load_or_pc_plus_four_control_out),
-        .pc_plus_four(pc_plus_four_out),
+        .pc_plus_four(pc_current_out),
         .pc_plus_four_out(pc_plus_four_out_ex),
         .pc_current(pc_current_out),
         .pc_current_out(pc_current_out_ex),
