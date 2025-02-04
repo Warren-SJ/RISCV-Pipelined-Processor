@@ -31,8 +31,8 @@ module MW_WB(
     output reg [4:0] rd_address_out,
     input [31:0] alu_result_in,
     output reg [31:0] alu_result_out,
-    input [31:0] pc_plus_four_in,
-    output reg [31:0] pc_plus_four_out,
+    input [31:0] pc_current_in,
+    output reg [31:0] pc_current_out,
     input clk,
     input resetn
     );
@@ -43,14 +43,14 @@ module MW_WB(
             reg_write_out <= 1'b0;
             rd_address_out <= 5'b00000;
             alu_result_out <= 32'h00000000;
-            pc_plus_four_out <= 32'h00000000;
+            pc_current_out <= 32'h00000000;
         end else begin
             read_data_out <= read_data_in;
             alu_or_load_or_pc_plus_four_out <= alu_or_load_or_pc_plus_four_in;
             reg_write_out <= reg_write_in;
             rd_address_out <= rd_address_in;
             alu_result_out <= alu_result_in;
-            pc_plus_four_out <= pc_plus_four_in;
+            pc_current_out <= pc_current_in;
         end
      end
 endmodule

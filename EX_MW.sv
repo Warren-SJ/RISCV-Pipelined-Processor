@@ -33,8 +33,8 @@ module EX_MW(
     output reg reg_write_out,
     input [1:0] alu_or_load_or_pc_plus_four_in,
     output reg [1:0] alu_or_load_or_pc_plus_four_out,
-    input [31:0] pc_plus_four_in,
-    output reg [31:0] pc_plus_four_out,
+    input [31:0] pc_current_in,
+    output reg [31:0] pc_current_out,
     input [1:0] data_men_write_command_in,
     output reg [1:0] data_men_write_command_out,
     input [2:0] load_gen_command_in,
@@ -49,7 +49,7 @@ module EX_MW(
             data_write_en_out <= 1'b0;
             reg_write_out <= 1'b0;
             alu_or_load_or_pc_plus_four_out <= 1'b0;
-            pc_plus_four_out <= 32'h00000000;
+            pc_current_out <= 32'h00000000;
             rd_address_out <= 5'b00000;
             data_men_write_command_out <= 2'b00;
             load_gen_command_out <= 3'b000;
@@ -59,7 +59,7 @@ module EX_MW(
             data_write_en_out <= data_write_en_in;
             reg_write_out <= reg_write_in;
             alu_or_load_or_pc_plus_four_out <= alu_or_load_or_pc_plus_four_in;
-            pc_plus_four_out <= pc_plus_four_in;
+            pc_current_out <= pc_current_in;
             rd_address_out <= rd_address_in;
             data_men_write_command_out <= data_men_write_command_in;
             load_gen_command_out <= load_gen_command_in;
