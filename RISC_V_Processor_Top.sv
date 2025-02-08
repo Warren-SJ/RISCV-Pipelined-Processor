@@ -82,8 +82,7 @@ module RISC_V_Processor_Top(
     //Upper immediate wires
     wire [31:0] rs1_data_or_pc_or_zero;
     wire [1:0] rs1_data_or_pc_or_zero_control;
-    
-    
+     
     //Instruction Fetch - Instruction Decode Pipeline Register
     wire [31:0] fetched_instruction;
     wire [31:0] branch_address;

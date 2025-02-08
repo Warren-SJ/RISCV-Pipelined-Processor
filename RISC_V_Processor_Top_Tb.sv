@@ -26,10 +26,12 @@ module RISC_V_Processor_Top_Tb;
 
     reg clk;
     reg resetn;
+    reg select_output;
 
     RISC_V_Processor_Top RISC_V_Processor_Top (
         .clk(clk),
-        .resetn(resetn)
+        .resetn(resetn),
+        .select_output(select_output)
     );
 
     always #5 clk = ~clk;
@@ -37,7 +39,7 @@ module RISC_V_Processor_Top_Tb;
     initial begin
         clk = 0;
         resetn = 0;
-        
+        select_output = 1'b0;
         $dumpfile("RISC_V_Processor_Top.vcd");
         $dumpvars(0, RISC_V_Processor_Top_Tb);
         
